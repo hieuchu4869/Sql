@@ -1,0 +1,88 @@
+﻿use QLDA
+
+select Sum(THOIGIAN),
+--cast( THOIGIAN  as decimal(5,2))
+CONVERT(varchar, THOIGIAN , 1)
+from PHANCONG
+group by THOIGIAN
+
+select pb.TENPHG, nv.TENNV,
+CONVERT(decimal(10,2), AVG(nv.LUONG)) as TongLuong
+from PHONGBAN pb
+join NHANVIEN nv
+on pb.MAPHG = nv.PHG
+group by pb.TENPHG, nv.TENNV
+
+SELECT pb.TENPHG, 
+       CONVERT(VARCHAR,Cast(AVG(nv.LUONG) as money ), 1) AS TongLuong, 
+       nv.TENNV
+FROM PHONGBAN pb
+JOIN NHANVIEN nv ON pb.MAPHG = nv.PHG
+GROUP BY pb.TENPHG, nv.TENNV;
+
+--- Bài 2 --
+
+select DEAN.TENDEAN, Ceiling(Sum(PHANCONG.THOIGIAN)) as Tongsogiolamviec
+from DEAN
+join PHANCONG
+on DEAN.MADA = PHANCONG.MADA
+group by DEAN.TENDEAN
+
+
+select DEAN.TENDEAN, Floor(Sum(PHANCONG.THOIGIAN)) as Tongsogiolamviec
+from DEAN
+join PHANCONG
+on DEAN.MADA = PHANCONG.MADA
+group by DEAN.TENDEAN
+
+
+select DEAN.TENDEAN, Round(SUM(PHANCONG.THOIGIAN),2) as SOgiolamviec 
+from DEAN
+join PHANCONG
+on DEAN.MADA = PHANCONG.MADA
+group by DEAN.TENDEAN
+
+
+select NHANVIEN.TENNV,NHANVIEN.TENLOT,NHANVIEN.DCHI, round(AVG(LUONG),2) as Luongtrungbinh
+from NHANVIEN
+join PHONGBAN
+on NHANVIEN.PHG = PHONGBAN.MAPHG
+where NHANVIEN.LUONG > ( select(AVG(NHANVIEN.LUONG))from NHANVIEN ) and PHONGBAN.TENPHG like' Nghiên cứu ' 
+group by NHANVIEN.TENNV,NHANVIEN.TENLOT,NHANVIEN.DCHI
+
+
+
+select * from PHONGBAN
+
+-- Bài 3 --
+
+SELECT nv.MANV, upper(nv.HONV) as Hoten, 
+lower(nv.TENLOT) as TenLot, CONCAT(UPPER(SUBSTRING(TENNV, 1, 1)), UPPER(SUBSTRING(TENNV, 2, 1)), LOWER(SUBSTRING(TENNV, 3, LEN(TENNV)))) AS TENNV,
+left(nv.DCHI,15), COUNT(tn.TENTN) AS SothanNhan
+FROM NHANVIEN nv
+JOIN THANNHAN tn ON nv.MANV = tn.MA_NVIEN
+GROUP BY nv.MANV, nv.HONV, nv.TENLOT, nv.TENNV, nv.DCHI
+HAVING COUNT(tn.TENTN) > 2;
+
+ SELECT COUNT(nv.MANV) AS EmployeeCount, pb.TENPHG, pb.TRPHG
+FROM PHONGBAN pb
+JOIN NHANVIEN nv ON pb.MAPHG = nv.PHG
+GROUP BY pb.TENPHG, pb.TRPHG
+HAVING COUNT(nv.MANV) = 
+(SELECT MAX(EmployeeCount)
+FROM (SELECT COUNT(nv.MANV) AS EmployeeCount
+FROM PHONGBAN pb JOIN NHANVIEN nv
+ON pb.MAPHG = nv.PHG
+GROUP BY pb.TENPHG, pb.TRPHG) AS Counts);
+
+-- Bài 4 --
+select NGSINH
+from NHANVIEN
+where NGSINH between 1960 and 1965
+
+select 2023-YEAR(NGSINH) as Tuoi
+from NHANVIEN
+
+select DATENAME(weekday, NGSINH) 
+from NHANVIEN
+
